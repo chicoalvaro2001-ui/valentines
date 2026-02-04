@@ -1,0 +1,249 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Be my Valentine? ❤️</title>
+
+  <!-- Tenor embed script -->
+  <script async src="https://tenor.com/embed.js"></script>
+
+  <style>
+    :root{
+      --bg1:#fff0f4;
+      --bg2:#ffe3ea;
+      --red:#e11d48;
+      --red2:#fb7185;
+      --ink:#3b0a1a;
+      --shadow: 0 20px 60px rgba(0,0,0,.12);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at 20% 10%, var(--bg2), var(--bg1));
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(820px, 92vw);
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(225,29,72,.15);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 34px 26px 32px;
+      text-align:center;
+      position:relative;
+    }
+
+    h1{
+      margin: 0 0 22px;
+      font-size: clamp(28px, 4vw, 44px);
+      color: var(--ink);
+    }
+
+    .buttons{
+      display:flex;
+      justify-content:center;
+      gap:18px;
+      margin-bottom: 10px;
+    }
+
+    .btn{
+      border:none;
+      border-radius: 999px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    .yes{
+      background: linear-gradient(135deg, var(--red), var(--red2));
+      color: white;
+      font-weight: 900;
+      font-size: 26px;
+      padding: 18px 60px;
+      min-width: 280px;
+      box-shadow: 0 18px 34px rgba(225,29,72,.26);
+      letter-spacing: .5px;
+    }
+    .yes:hover{ transform: scale(1.04); }
+
+    /* NO: grande al inicio, se encoge mientras huye */
+    .no{
+  background: rgba(225,29,72,.16);
+  color: #9f1239;
+  border: 2px solid rgba(225,29,72,.45);
+  padding: 18px 34px;      /* ⬅️ MUCHO más grande */
+  font-size: 22px;         /* ⬅️ Texto grande */
+  min-width: 140px;        /* ⬅️ Botón ancho */
+  font-weight: 900;
+  letter-spacing: .5px;
+  position: fixed;
+  z-index: 9999;
+  border-radius: 999px;
+  box-shadow: 0 14px 28px rgba(225,29,72,.22);
+  will-change: left, top, transform, filter;
+}
+
+
+    .hidden{ display:none; }
+
+    .result{
+      margin-top: 18px;
+      display:grid;
+      gap:18px;
+      place-items:center;
+    }
+
+    /* ACCORDION LETTER */
+    .letter{
+      max-width: 680px;
+      background: rgba(255,255,255,.94);
+      border-radius: 22px;
+      box-shadow: 0 14px 36px rgba(0,0,0,.10);
+      border: 1px solid rgba(225,29,72,.12);
+      overflow:hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 700ms ease, opacity 400ms ease;
+    }
+    .letter.open{
+      max-height: 240px; /* enough for text */
+      opacity: 1;
+    }
+    .letter-inner{
+      padding: 22px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: rgba(59,10,26,.88);
+    }
+
+    /* Tenor GIF container */
+    .tenor-wrap{
+      width: min(520px, 92vw);
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 18px 44px rgba(0,0,0,.12);
+      border: 1px solid rgba(225,29,72,.18);
+      background: rgba(255,255,255,.75);
+      opacity: 0;
+      transform: translateY(12px) scale(.96);
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+    .tenor-wrap.show{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card" id="card">
+    <h1>Will you be my Valentine? ❤️</h1>
+
+    <div class="buttons" id="buttons">
+      <button class="btn yes" id="yesBtn">YES</button>
+      <button class="btn no" id="noBtn">NO</button>
+    </div>
+
+    <!-- Hidden until YES -->
+    <div class="result hidden" id="result">
+
+      <!-- Accordion text -->
+      <div class="letter" id="letter">
+        <div class="letter-inner">
+          Te juro que me encantas de una forma que no puedo explicar en palabras Nayseth ❤️
+        </div>
+      </div>
+
+      <!-- GIF -->
+      <div class="tenor-wrap" id="tenorWrap">
+        <div
+          class="tenor-gif-embed"
+          data-postid="17556249457717637419"
+          data-share-method="host"
+          data-aspect-ratio="1.40678"
+          data-width="100%">
+          <a href="https://tenor.com/view/milk-and-mocha-hug-hugs-milk-and-mocha-hug-gif-17556249457717637419">
+            Milk And Mocha Hug GIF
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const buttons = document.getElementById("buttons");
+    const result = document.getElementById("result");
+    const card = document.getElementById("card");
+    const letter = document.getElementById("letter");
+    const tenorWrap = document.getElementById("tenorWrap");
+
+    const MOVE_EVERY_MS = 520;
+    let dodges = 0;
+    let noInterval = null;
+
+    function rand(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function moveNo(){
+      const padding = 12;
+      const rect = noBtn.getBoundingClientRect();
+      const maxX = Math.max(padding, window.innerWidth - rect.width - padding);
+      const maxY = Math.max(padding, window.innerHeight - rect.height - padding);
+
+      noBtn.style.left = rand(padding, maxX) + "px";
+      noBtn.style.top  = rand(padding, maxY) + "px";
+
+      dodges++;
+      const scale = Math.max(0.55, 1 - dodges * 0.08);
+      const blur  = Math.min(1.0, dodges * 0.08);
+      noBtn.style.transform = `scale(${scale})`;
+      noBtn.style.filter = `blur(${blur}px)`;
+    }
+
+    function startNo(){
+      noInterval = setInterval(moveNo, MOVE_EVERY_MS);
+    }
+    function stopNo(){
+      if (noInterval) clearInterval(noInterval);
+    }
+
+    noBtn.addEventListener("mouseenter", moveNo);
+    noBtn.addEventListener("click", e => { e.preventDefault(); moveNo(); });
+
+    yesBtn.addEventListener("click", () => {
+      stopNo();
+      buttons.classList.add("hidden");
+      noBtn.classList.add("hidden");
+      result.classList.remove("hidden");
+
+      // Accordion opens first
+      setTimeout(() => letter.classList.add("open"), 80);
+      // GIF appears after
+      setTimeout(() => tenorWrap.classList.add("show"), 520);
+
+      if (window.Tenor && typeof window.Tenor.init === "function") {
+        try { window.Tenor.init(); } catch {}
+      }
+    });
+
+    // Initial NO position
+    const r = card.getBoundingClientRect();
+    noBtn.style.left = Math.min(window.innerWidth - 120, r.right - 40) + "px";
+    noBtn.style.top  = Math.min(window.innerHeight - 60,  r.bottom - 20) + "px";
+    startNo();
+
+    window.addEventListener("resize", moveNo);
+  </script>
+</body>
+</html>
